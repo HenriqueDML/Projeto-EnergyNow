@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Energy Now</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-blue-100 flex items-center justify-center min-h-screen">
+    <div class="bg-white p-10 rounded-lg shadow-lg max-w-3xl w-full space-y-10">
+        <h1 class="text-3xl font-bold text-center text-blue-600">Bem-vindo à Energy Now</h1>
+
+        <!-- Formulário combinado -->
+        <div>
+            <h2 class="text-2xl font-semibold mb-4 text-blue-500">Previsão e Classificação</h2>
+            <form id="formPredicoes" class="space-y-5">
+                <div>
+                    <label for="regiao" class="block text-blue-500">Região:</label>
+                    <input type="text" id="regiao" name="regiao"
+                           class="w-full p-3 border border-blue-200 rounded-md mt-1 focus:outline-none focus:ring-2 focus:ring-blue-300"
+                           placeholder="Digite a região...">
+                </div>
+                <div>
+                    <label for="consumoRegional" class="block text-blue-500">Consumo Regional (kWh):</label>
+                    <input type="number" id="consumoRegional" name="consumoRegional"
+                           class="w-full p-3 border border-blue-200 rounded-md mt-1 focus:outline-none focus:ring-2 focus:ring-blue-300"
+                           placeholder="Digite o consumo da região...">
+                </div>
+                <div>
+                    <label for="investimento" class="block text-blue-500">Investimento Inicial (R$):</label>
+                    <input type="number" id="investimento" name="investimento"
+                           class="w-full p-3 border border-blue-200 rounded-md mt-1 focus:outline-none focus:ring-2 focus:ring-blue-300"
+                           placeholder="Digite o investimento inicial...">
+                </div>
+                <div>
+                    <label for="consumo" class="block text-blue-500">Consumo Médio de Energia (kWh):</label>
+                    <input type="number" id="consumo" name="consumo"
+                           class="w-full p-3 border border-blue-200 rounded-md mt-1 focus:outline-none focus:ring-2 focus:ring-blue-300"
+                           placeholder="Digite o consumo médio...">
+                </div>
+                <button type="button" onclick="enviarPredicoes()"
+                        class="w-full bg-blue-500 text-white p-3 rounded-md hover:bg-blue-600 transition duration-200">
+                    Enviar Dados
+                </button>
+            </form>
+            <p id="resultadoClassificacao" class="mt-4 text-center text-lg text-green-700 font-semibold"></p>
+            <p id="resultadoRegressao" class="mt-4 text-center text-lg text-green-700 font-semibold"></p>
+        </div>
+    </div>
+
+    <script>
+        // Função para enviar dados para ambos os endpoints
+        function enviarPredicoes() {
+            const dados = {
+                regiao: document.getElementById('regiao').value,
+                consumoRegional: parseFloat(document.getElementById('consumoRegional').value),
+                investimento: parseFloat(document.getElementById('investimento').value),
+                consumo: parseFloat(document.getElementById('consumo').value)
+            };
+
+            // Enviar para o endpoint de regressão (redução de CO2)
+            fetch('/prever_co2', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    "Qual a região de implementação do projeto de energia?": dados.regiao,
+                    "Qual o consumo de energia na região?": dados.consumoRegional,
+                    "Qual o investimento inicial para o projeto?": dados.investimento,
+                    "Qual o consumo médio de energia?": dados.consumo
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById("resultadoRegressao").innerHTML = 
+                    `Redução estimada de CO2: ${data.reducao_co2_estimada.toFixed(2)} kg`;
+            })
+            .catch(error => console.error('Erro na previsão de CO2:', error));
+
+            // Enviar para o endpoint de classificação (tipo de energia)
+            fetch('/classificar_tipo', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    "Qual a região de implementação do projeto de energia?": dados.regiao,
+                    "Qual o consumo de energia na região?": dados.consumoRegional
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById("resultadoClassificacao").innerHTML = 
+                    `Tipo de energia classificado: ${data.tipo_energia}`;
+            })
+            .catch(error => console.error('Erro na classificação do tipo de energia:', error));
+        }
+    </script>
+</body>
+</html>
