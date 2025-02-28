@@ -9,6 +9,9 @@
 
 A **Energy Now** é um sistema que visa transformar o modo que você consume energia, oferecendo insights, gerenciamento e transparência no processo no consumo de energia em sua casa. O objetivo do projeto é facilitar o acompanhamento e diminuir o consumo de energia, tendo um consumo conciente, contribuindo para a natureza e o bolso do cliente
 
+**Video Pitch do Projeto:**
+LINK: https://www.youtube.com/watch?v=ln3WiU9utYY
+
 ## Funcionalidades
 
 - **Calculadora de Watts**: Calculadora simples, onde fazemos uma média de consumo com base nos dados fornecidos e oferecendo pequenas mudanças que vão afetar na diminuição de consumo.
